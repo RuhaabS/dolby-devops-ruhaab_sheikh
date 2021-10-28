@@ -47,3 +47,4 @@ When trying to update large datasets of up to 5 million entries, we need to make
 
 Scan functions can be fairly slow and take time to sequentially read each individual entry. To combat this, I would add a Global Secondary Index to allow me to run a query function instead which is much quicker in comparison.
 
+Furthermore, having two separate loops adds to the processing time of the script. Instead, I would attempt to combine both of their functionalities into a single loop to reduce processing and improve overall efficiency.

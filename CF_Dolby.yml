@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: stuff
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        - AttributeName: "created"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+        - AttributeName: "created"
+          KeyType: "RANGE"
+      TimeToLiveSpecification:
+        AttributeName: "ExpirationTime"
+        Enabled: true
+      ProvisionedThroughput:
+        ReadCapacityUnits: "10"
+        WriteCapacityUnits: "5"
+    DependsOn:
+      - DynamoDBQueryPolicy
+
+  DynamoDBQueryPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: DynamoDBQueryPolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action: 
+              - "dynamodb:Query"
+              - "dynamodb:Update*"
+              - "dynamodb:PutItem"
+              - "dynamodb:GetItem"
+              - "dynamodb:BatchGetItem"
+            Resource: "*"
+      Roles:
+        - Ref: "OrdersTableQueryRole"
+
+  OrdersTableQueryRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "dynamodb.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
